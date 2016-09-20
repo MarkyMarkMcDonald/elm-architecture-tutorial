@@ -13,3 +13,6 @@ unselected item =
 
 toggle : Selectable item -> Selectable item
 toggle selectable = { selectable | selected = not selectable.selected}
+
+selected : List (Selectable a) -> List a
+selected items = items |> List.filter .selected |> List.map .item

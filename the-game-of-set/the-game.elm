@@ -5,6 +5,8 @@ import Html.Events exposing (onClick)
 import String exposing (repeat)
 import Card exposing (Color (..), Shape (..), Number (..))
 import Selectable exposing (..)
+import Sets exposing (isValid)
+import Debug exposing (..)
 
 main =
   Html.beginnerProgram
@@ -30,14 +32,14 @@ init = { cards = List.map unselected cards
 
 cards : List Card.Model
 cards = [ { shape = Diamond, number = Three, color = Red }
-        , { shape = Rectangle, number = Two, color = Blue }
+        , { shape = Oval, number = Two, color = Green }
         , { shape = Diamond, number = One, color = Red }
         , { shape = Squiggle, number = Two, color = Blue }
-        , { shape = Squiggle, number = One, color = Blue }
+        , { shape = Diamond, number = One, color = Green }
         , { shape = Squiggle, number = Three, color = Blue }
-        , { shape = Squiggle, number = One, color = Blue }
-        , { shape = Squiggle, number = Two, color = Blue }
-        , { shape = Squiggle, number = Two, color = Blue }
+        , { shape = Squiggle, number = One, color = Green }
+        , { shape = Oval, number = Two, color = Blue }
+        , { shape = Oval, number = Two, color = Blue }
         ]
 
 -- UPDATE
@@ -55,22 +57,12 @@ updateSelectionsANDSetStatus : Int -> Model -> Model
 updateSelectionsANDSetStatus index model =
     let updatedCards = applyAtIndex index toggle model.cards in
         { model | cards = updatedCards
-        , validSetSelected = isAValidSet updatedCards
+        , validSetSelected = isAValidSet <| (Selectable.selected updatedCards)
         }
 
-isAValidSet : List SelectableCard -> Bool
+isAValidSet : List Card.Model -> Bool
 isAValidSet cards =
-    let
-    filteredSelected = List.filter selected cards
-    filtered = List.map .item filteredSelected
-    colors = List.map .color filtered
-    firstColor = Maybe.withDefault Blue (List.head colors)
-    colorsAllSame = List.all (\color -> firstColor == color) colors
-    in
-        List.length filtered == 3 && colorsAllSame
-
-selected : Selectable item -> Bool
-selected selectable = selectable.selected
+    List.length cards == 3 && Sets.isValid cards
 
 applyAtIndex : Int -> (a -> a) -> List a -> List a
 applyAtIndex indexToSendTo action elements =
@@ -92,7 +84,9 @@ viewIndexedCard : Int -> SelectableCard -> Html Msg
 viewIndexedCard id selectable =
   span [
         onClick (ToggleSelect id),
-        style [("border", selectableBorder selectable)]
+        style [ ("border", selectableBorder selectable)
+              , ("display", "inline-block")
+              ]
       ] [
         Card.view selectable.item
       ]
@@ -101,4 +95,3 @@ selectableBorder : Selectable a -> String
 selectableBorder selectable =
     if selectable.selected then "1px solid red"
     else "1px solid black"
-
