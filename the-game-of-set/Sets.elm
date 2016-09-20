@@ -4,7 +4,11 @@ import Card exposing (Model, Color (..) )
 
 isValid : List Card.Model -> Bool
 isValid cards =
-     cards |> List.map .color |> any [allSame, allUnique]
+     let colors = cards |> List.map .color |> any [allSame, allUnique]
+         numbers = cards |> List.map .number |> any [allSame, allUnique]
+         shapes = cards |> List.map .shape |> any [allSame, allUnique]
+     in colors && numbers && shapes
+
 
 any : List (List a -> Bool) -> List a -> Bool
 any listPredicates list =
