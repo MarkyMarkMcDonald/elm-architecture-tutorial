@@ -61,21 +61,26 @@ updateSelectionsANDSetStatus index model =
 isAValidSet : List SelectableCard -> Bool
 isAValidSet cards =
     let
-    filteredSelected = List.filter selected cards
-    filtered = List.map .item filteredSelected
-    colors = List.map .color filtered
-    firstColor = Maybe.withDefault Blue (List.head colors)
-
-
-    colorsAllSame = List.all (\color -> firstColor == color) colors
-    different = allDifferent(colors)
+        filteredSelected = List.filter selected cards
+        filtered = List.map .item filteredSelected
     in
-        List.length filtered == 3 && (colorsAllSame || different)
+        List.length filtered == 3
+          && allSameOrDifferent .shape filtered
+          && allSameOrDifferent .number filtered
+          && allSameOrDifferent .color filtered
 
-allSameOrDifferent : List a -> Bool
-allSameOrDifferent list =
-    implement me!
+allSameOrDifferent : (a -> b) -> List a -> Bool
+allSameOrDifferent func list =
+    let
+        list' = List.map func list
+    in
+        (allSame list') || (allDifferent list')
 
+allSame : List a -> Bool
+allSame list =
+    case list of
+        first :: tail -> List.all (\other -> other == first) tail
+        [] -> True
 
 allDifferent : List a -> Bool
 allDifferent list =
