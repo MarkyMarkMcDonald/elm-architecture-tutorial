@@ -1,18 +1,18 @@
 module Sets exposing (isValid)
 
-import Card exposing (Model, Color (..), attributes)
+import Card exposing (Card, Color (..), attributes)
 
-isValid : List Card.Model -> Bool
+isValid : List Card -> Bool
 isValid cards =
      List.all isTrue (attributeChecks cards)
 
-attributeChecks : List (Card.Model) -> List (Bool)
+attributeChecks : List (Card) -> List (Bool)
 attributeChecks cards =
     List.map (allSameOrDifferent cards) Card.attributes
 
 isTrue = ((==) True)
 
-allSameOrDifferent : List (Card.Model) -> (Card.Model -> a) -> Bool
+allSameOrDifferent : List (Card) -> (Card -> a) -> Bool
 allSameOrDifferent cards attribute =
     cards |> List.map attribute |> any [allSame, allUnique]
 

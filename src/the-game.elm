@@ -3,7 +3,7 @@ import Html.App as Html
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import String exposing (repeat)
-import Card exposing (Color (..), Shape (..), Number (..))
+import Card exposing (Card, Color (..), Shape (..), Number (..))
 import Selectable exposing (..)
 import Sets exposing (isValid)
 import Debug exposing (..)
@@ -20,7 +20,7 @@ type alias Model =
   , validSetSelected : Bool
   }
 
-type alias SelectableCard = Selectable Card.Model
+type alias SelectableCard = Selectable Card
 
 -- MODEL
 
@@ -30,7 +30,7 @@ init = { cards = List.map unselected cards
        }
 
 
-cards : List Card.Model
+cards : List Card
 cards = [ { shape = Diamond, number = Three, color = Red }
         , { shape = Oval, number = Two, color = Green }
         , { shape = Diamond, number = One, color = Red }
@@ -60,7 +60,7 @@ updateSelectionsANDSetStatus index model =
         , validSetSelected = isAValidSet <| (Selectable.selected updatedCards)
         }
 
-isAValidSet : List Card.Model -> Bool
+isAValidSet : List Card -> Bool
 isAValidSet cards =
     List.length cards == 3 && Sets.isValid cards
 

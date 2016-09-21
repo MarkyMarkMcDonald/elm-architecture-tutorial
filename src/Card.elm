@@ -1,17 +1,17 @@
-module Card exposing (Model, view, Color (..), Shape (..), Number (..), attributes)
+module Card exposing (Card, view, Color (..), Shape (..), Number (..), attributes)
 import Html exposing (..)
 import Html.App as Html
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import String exposing (repeat)
 
-type alias Model =
+type alias Card =
     { shape: Shape
     , number: Number
     , color: Color
     }
 
-attributes : List (Model -> Attribute)
+attributes : List (Card -> Attribute)
 attributes = [ColorAtt << .color, ShapeAtt << .shape, NumberAtt << .number]
 
 type Attribute
@@ -32,7 +32,7 @@ asciiArt shape =
 
 -- VIEW
 
-view : Model -> Html msg
+view : Card -> Html msg
 view card =
     let
     repeatCount = case card.number of
