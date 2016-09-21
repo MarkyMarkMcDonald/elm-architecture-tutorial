@@ -1,4 +1,4 @@
-module Card exposing (Model, view, Color (..), Shape (..), Number (..), attributes, Attribute)
+module Card exposing (Model, view, Color (..), Shape (..), Number (..), attributes)
 import Html exposing (..)
 import Html.App as Html
 import Html.Attributes exposing (..)
@@ -12,7 +12,7 @@ type alias Model =
     }
 
 attributes : List (Model -> Attribute)
-attributes = [\x -> ColorAtt x.color, \x -> ShapeAtt x.shape, \x -> NumberAtt x.number]
+attributes = [ColorAtt << .color, ShapeAtt << .shape, NumberAtt << .number]
 
 type Attribute
   = ColorAtt Color

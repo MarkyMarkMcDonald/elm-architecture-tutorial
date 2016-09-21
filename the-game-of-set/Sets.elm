@@ -6,15 +6,14 @@ isValid : List Card.Model -> Bool
 isValid cards =
      List.all isTrue (attributeChecks cards)
 
-
 attributeChecks : List (Card.Model) -> List (Bool)
 attributeChecks cards =
-    List.map (allSameOrDifferentAttribute cards) Card.attributes
+    List.map (allSameOrDifferent cards) Card.attributes
 
 isTrue = ((==) True)
 
-allSameOrDifferentAttribute : List (Card.Model) -> (Card.Model -> Card.Attribute) -> Bool
-allSameOrDifferentAttribute cards attribute =
+allSameOrDifferent : List (Card.Model) -> (Card.Model -> a) -> Bool
+allSameOrDifferent cards attribute =
     cards |> List.map attribute |> any [allSame, allUnique]
 
 any : List (List a -> Bool) -> List a -> Bool
