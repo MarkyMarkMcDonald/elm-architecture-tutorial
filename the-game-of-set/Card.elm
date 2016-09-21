@@ -5,15 +5,19 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import String exposing (repeat)
 
-type alias Model = {
-        shape: Shape,
-        number: Number,
-        color: Color
+type alias Model =
+    { shape: Shape
+    , number: Number
+    , color: Color
     }
 
 attributes : List (Model -> Attribute)
-attributes = [.color, .shape, .number]
-type Attribute = Color | Shape | Number
+attributes = [\x -> ColorAtt x.color, \x -> ShapeAtt x.shape, \x -> NumberAtt x.number]
+
+type Attribute
+  = ColorAtt Color
+  | ShapeAtt Shape
+  | NumberAtt Number
 
 type Color = Red | Green | Blue
 type Shape = Diamond | Oval | Squiggle
