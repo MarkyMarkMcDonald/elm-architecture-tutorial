@@ -1,11 +1,12 @@
 {
     "version": "1.0.0",
-    "summary": "Examples of The Elm Architecture",
-    "repository": "https://github.com/elm-lang/elm-architecture-tutorial.git",
-    "license": "BSD3",
+    "summary": "The game of sets!",
+    "repository": "https://github.com/MarkyMarkMcDonald/elm-architecture-tutorial.git",
+    "license": "ISC",
     "source-directories": [
-        "nesting",
-        "the-game-of-set"
+        "elm-architecture/nesting",
+        "elm-architecture/examples",
+        "src"
     ],
     "exposed-modules": [],
     "dependencies": {
