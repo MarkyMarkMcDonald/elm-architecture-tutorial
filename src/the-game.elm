@@ -16,9 +16,7 @@ main =
     }
 
 type alias Model =
-  { cards : List (SelectableCard)
-  , validSetSelected : Bool
-  }
+  { cards : List (SelectableCard), deck: List (Card) }
 
 type alias SelectableCard = Selectable Card
 
@@ -26,9 +24,21 @@ type alias SelectableCard = Selectable Card
 
 init : Model
 init = { cards = List.map unselected cards
-       , validSetSelected = False
+       , deck = deck
        }
 
+
+deck : List Card
+deck = [ { shape = Oval, number = One, color = Red }
+       , { shape = Oval, number = One, color = Green }
+       , { shape = Oval, number = One, color = Red }
+       , { shape = Squiggle, number = Two, color = Blue }
+       , { shape = Diamond, number = One, color = Green }
+       , { shape = Squiggle, number = Three, color = Blue }
+       , { shape = Squiggle, number = One, color = Green }
+       , { shape = Oval, number = Two, color = Blue }
+       , { shape = Oval, number = Two, color = Red }
+       ]
 
 cards : List Card
 cards = [ { shape = Diamond, number = Three, color = Red }
@@ -39,7 +49,7 @@ cards = [ { shape = Diamond, number = Three, color = Red }
         , { shape = Squiggle, number = Three, color = Blue }
         , { shape = Squiggle, number = One, color = Green }
         , { shape = Oval, number = Two, color = Blue }
-        , { shape = Oval, number = Two, color = Blue }
+        , { shape = Oval, number = Two, color = Red }
         ]
 
 -- UPDATE
@@ -53,12 +63,27 @@ update message model =
         ToggleSelect id ->
             updateSelectionsANDSetStatus id model
 
+replaceSelectedCards : { cards: List SelectableCard, deck: List Card, output: List SelectableCard } -> { cards: List SelectableCard, deck: List Card, output: List SelectableCard }
+replaceSelectedCards { cards, deck, output } =
+    case cards of
+      [] -> { cards = cards, deck = deck, output = output }
+      card :: rest -> 
+          if card.selected then
+              case deck of
+                  [] -> replaceSelectedCards { cards = rest, deck = deck, output = output }
+                  newCard :: restDeck -> replaceSelectedCards { cards = rest, deck = restDeck, output = output ++ [unselected newCard] }
+         else
+              replaceSelectedCards { cards = rest, deck = deck, output = output ++ [card] }
+
 updateSelectionsANDSetStatus : Int -> Model -> Model
 updateSelectionsANDSetStatus index model =
-    let updatedCards = applyAtIndex index toggle model.cards in
-        { model | cards = updatedCards
-        , validSetSelected = isAValidSet <| (Selectable.selected updatedCards)
-        }
+    let updatedModel = { model | cards = applyAtIndex index toggle model.cards } in
+    let {cards, deck} = updatedModel in
+    if isAValidSet <| Selectable.selected cards then 
+        let things = replaceSelectedCards { cards = cards, deck = deck, output = [] } in
+            { cards = things.output, deck = things.deck }
+    else
+       updatedModel 
 
 isAValidSet : List Card -> Bool
 isAValidSet cards =
@@ -78,7 +103,7 @@ applyAtIndex indexToSendTo action elements =
 view : Model -> Html Msg
 view model =
     let cards = List.indexedMap viewIndexedCard model.cards in
-      div [] (cards ++ [div [] [text ("Set status" ++ toString(model.validSetSelected))]])
+      div [] cards
 
 viewIndexedCard : Int -> SelectableCard -> Html Msg
 viewIndexedCard id selectable =

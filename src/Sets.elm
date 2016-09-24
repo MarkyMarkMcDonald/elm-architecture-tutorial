@@ -33,5 +33,5 @@ firstItemIsUnique items =
 
 allSame : List a -> Bool
 allSame items = case items of
-    front :: tail -> List.all ((==) front) tail && allSame tail
+    front :: tail -> List.all ((==) front) tail
     [] -> True
