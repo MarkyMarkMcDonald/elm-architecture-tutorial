@@ -7,6 +7,7 @@ import Card exposing (Card, Color (..), Shape (..), Number (..))
 import Selectable exposing (..)
 import Sets exposing (isValid)
 import Debug exposing (..)
+import ListReplacement exposing (fromIf)
 
 main =
   Html.beginnerProgram
@@ -63,25 +64,13 @@ update message model =
         ToggleSelect id ->
             updateSelectionsANDSetStatus id model
 
-replaceSelectedCards : { cards: List SelectableCard, deck: List Card, output: List SelectableCard } -> { cards: List SelectableCard, deck: List Card, output: List SelectableCard }
-replaceSelectedCards { cards, deck, output } =
-    case cards of
-      [] -> { cards = cards, deck = deck, output = output }
-      card :: rest -> 
-          if card.selected then
-              case deck of
-                  [] -> replaceSelectedCards { cards = rest, deck = deck, output = output }
-                  newCard :: restDeck -> replaceSelectedCards { cards = rest, deck = restDeck, output = output ++ [unselected newCard] }
-         else
-              replaceSelectedCards { cards = rest, deck = deck, output = output ++ [card] }
-
 updateSelectionsANDSetStatus : Int -> Model -> Model
 updateSelectionsANDSetStatus index model =
     let updatedModel = { model | cards = applyAtIndex index toggle model.cards } in
     let {cards, deck} = updatedModel in
     if isAValidSet <| Selectable.selected cards then 
-        let things = replaceSelectedCards { cards = cards, deck = deck, output = [] } in
-            { cards = things.output, deck = things.deck }
+        let { output, source} = ListReplacement.fromIf .selected { input = cards, source = List.map unselected deck, output = [] } in
+            { cards = output, deck = List.map .item source }
     else
        updatedModel 
 
