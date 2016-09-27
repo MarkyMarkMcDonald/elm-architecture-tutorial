@@ -69,8 +69,8 @@ updateSelectionsANDSetStatus index model =
     let updatedModel = { model | cards = applyAtIndex index toggle model.cards } in
     let {cards, deck} = updatedModel in
     if isAValidSet <| Selectable.selected cards then 
-        let { output, source} = ListReplacement.fromIf .selected { input = cards, source = List.map unselected deck, output = [] } in
-            { cards = output, deck = List.map .item source }
+        let { items, source } = ListReplacement.fromIf .selected { items = cards, source = List.map unselected deck } in
+            { cards = items, deck = List.map .item source }
     else
        updatedModel 
 
