@@ -43,9 +43,12 @@ type alias SelectableCard = Selectable Card
 init : (Model, Cmd Msg)
 init =
     ( { cards = []
-       , deck = []
-       },
-       Task.perform (\error -> LoadedFromLocalStorage {cards=[], deck=[]}) (\result -> LoadedFromLocalStorage result) (Task.succeed {cards = List.map unselected cards, deck = deck})
+      , deck = []
+      }
+      , Task.perform
+        (\error -> LoadedFromStorage {cards=[], deck=[]})
+        (\result -> LoadedFromStorage result)
+        (Task.succeed {cards = List.map unselected cards, deck = deck})
     )
 
 deck : List Card
@@ -75,7 +78,7 @@ cards = [ { shape = Diamond, number = Three, color = Red }
 -- UPDATE
 
 type Msg
-    = ToggleSelect Int | LoadedFromLocalStorage Model
+    = ToggleSelect Int | LoadedFromStorage Model
 
 
 update : Msg -> Model -> (Model, Cmd a)
@@ -84,7 +87,7 @@ update message model =
         ToggleSelect id ->
             (updateSelectionsANDSetStatus id model, Cmd.none)
 
-        LoadedFromLocalStorage state ->
+        LoadedFromStorage state ->
             ( state, Cmd.none )
 
 updateSelectionsANDSetStatus : Int -> Model -> Model
