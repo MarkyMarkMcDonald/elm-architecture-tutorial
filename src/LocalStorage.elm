@@ -17,7 +17,7 @@ import Task exposing (Task)
 -}
 set : String -> Value -> Task () ()
 set key val =
-  Native.LocalStorage.setItem key val
+    Native.LocalStorage.setItem key val
 
 
 {-| Retrieve an element from localStorage with the given key. It may be empty.
@@ -28,7 +28,7 @@ set key val =
 -}
 get : String -> Task () (Maybe String)
 get key =
-  Native.LocalStorage.getItem key
+    Native.LocalStorage.getItem key
 
 
 {-| Remove an element from localStorage with the given key.
@@ -37,7 +37,7 @@ get key =
 -}
 remove : String -> Task () ()
 remove key =
-  Native.LocalStorage.removeItem key
+    Native.LocalStorage.removeItem key
 
 
 {-| Clear all the elements in localStorage.
@@ -46,4 +46,4 @@ remove key =
 -}
 clear : () -> Task () ()
 clear =
-  Native.LocalStorage.clear
+    Native.LocalStorage.clear
