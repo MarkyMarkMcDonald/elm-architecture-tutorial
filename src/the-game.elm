@@ -157,11 +157,7 @@ applyAtIndex indexToSendTo action elements =
 
 view : Model -> Html Msg
 view model =
-    let
-        cards =
-            List.indexedMap viewIndexedCard model.cards
-    in
-        div [] cards
+    div [] (List.indexedMap viewIndexedCard model.cards)
 
 
 viewIndexedCard : Int -> SelectableCard -> Html Msg
