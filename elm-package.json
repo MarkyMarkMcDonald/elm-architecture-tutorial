@@ -6,8 +6,10 @@
     "source-directories": [
         "elm-architecture/nesting",
         "elm-architecture/examples",
+        "src/Native",
         "src"
     ],
+    "native-modules" : true,
     "exposed-modules": [],
     "dependencies": {
         "elm-lang/core": "4.0.0 <= v < 5.0.0",

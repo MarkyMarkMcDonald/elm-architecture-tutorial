@@ -8,13 +8,30 @@ import Selectable exposing (..)
 import Sets exposing (isValid)
 import Debug exposing (..)
 import ListReplacement exposing (fromIf)
+import LocalStorage exposing (..)
+import Json.Encode
+import Task
 
-main =
-  Html.beginnerProgram
-    { model = init
-    , view = view
-    , update = update
-    }
+main =   Html.program
+           { init = init
+           , view = view
+           , update = update
+           , subscriptions = always Sub.none
+           }
+
+sampleStateJson = text <| Json.Encode.encode 0 (
+        Json.Encode.object
+            [ ("cards", Json.Encode.list <| List.map cardEncoder cards)
+            , ("deck", Json.Encode.list <| List.map cardEncoder deck)
+            ]
+    )
+
+cardEncoder : Card -> Json.Encode.Value
+cardEncoder card = Json.Encode.object
+    [ ("color", Json.Encode.string <| toString card.color)
+    , ("number", Json.Encode.string <| toString card.number)
+    , ("shape", Json.Encode.string <| toString card.shape)
+    ]
 
 type alias Model =
   { cards : List (SelectableCard), deck: List (Card) }
@@ -23,11 +40,13 @@ type alias SelectableCard = Selectable Card
 
 -- MODEL
 
-init : Model
-init = { cards = List.map unselected cards
-       , deck = deck
-       }
-
+init : (Model, Cmd Msg)
+init =
+    ( { cards = []
+       , deck = []
+       },
+       Task.perform (\error -> LoadedFromLocalStorage {cards=[], deck=[]}) (\result -> LoadedFromLocalStorage result) (Task.succeed {cards = List.map unselected cards, deck = deck})
+    )
 
 deck : List Card
 deck = [ { shape = Oval, number = One, color = Red }
@@ -56,13 +75,17 @@ cards = [ { shape = Diamond, number = Three, color = Red }
 -- UPDATE
 
 type Msg
-    = ToggleSelect Int
+    = ToggleSelect Int | LoadedFromLocalStorage Model
 
-update : Msg -> Model -> Model
+
+update : Msg -> Model -> (Model, Cmd a)
 update message model =
     case message of
         ToggleSelect id ->
-            updateSelectionsANDSetStatus id model
+            (updateSelectionsANDSetStatus id model, Cmd.none)
+
+        LoadedFromLocalStorage state ->
+            ( state, Cmd.none )
 
 updateSelectionsANDSetStatus : Int -> Model -> Model
 updateSelectionsANDSetStatus index model =
