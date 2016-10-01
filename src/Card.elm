@@ -1,4 +1,4 @@
-module Card exposing (Card, view, Color(..), Shape(..), Number(..), attributes)
+module Card exposing (Card, view, attributes, init)
 
 import Html exposing (..)
 import Html.App as Html
@@ -43,6 +43,29 @@ type Number
     | Three
 
 
+init : Int -> Card
+init num =
+    let
+        shape = case num `rem` 3 of
+            0 -> Diamond
+            1 -> Oval
+            _ -> Squiggle
+        number = case num // 3 `rem` 3 of
+            0 -> One
+            1 -> Two
+            _ -> Three
+        color = case num // 9 `rem` 3 of
+            0 -> Red
+            1 -> Green
+            _ -> Blue
+    in
+        { shape = shape, number = number, color = color }
+
+
+
+-- VIEW
+
+
 asciiArt : Shape -> String
 asciiArt shape =
     case shape of
@@ -54,10 +77,6 @@ asciiArt shape =
 
         Squiggle ->
             "❤︎"
-
-
-
--- VIEW
 
 
 view : Card -> Html msg

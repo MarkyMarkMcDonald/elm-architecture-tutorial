@@ -1,6 +1,6 @@
 module Sets exposing (isValid)
 
-import Card exposing (Card, Color(..), attributes)
+import Card exposing (Card, attributes)
 
 
 isValid : List Card -> Bool
