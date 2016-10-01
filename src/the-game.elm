@@ -1,23 +1,23 @@
 module Main exposing (..)
 
-import Html exposing (..)
-import Html.App as Html
+import Html exposing (Html, div, span)
+import Html.App as App
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import String exposing (repeat)
+
 import Card exposing (Card, init)
 import Selectable exposing (..)
 import Sets exposing (isValid)
-import Debug exposing (..)
+
 import ListReplacement exposing (fromIf)
-import LocalStorage exposing (..)
-import Task
 import Shuffling exposing (shuffle)
+
+import Task
 import Random
 
 
 main =
-    Html.program
+    App.program
         { init = init
         , view = view
         , update = update
