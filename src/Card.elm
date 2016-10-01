@@ -76,7 +76,7 @@ asciiArt shape =
             "◎"
 
         Squiggle ->
-            "❤︎"
+            "♡"
 
 
 view : Card -> Html msg
