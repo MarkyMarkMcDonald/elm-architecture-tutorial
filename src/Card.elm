@@ -1,10 +1,11 @@
-module Card exposing (Card, view, attributes, init)
+module Card exposing (Card, view, attributes, init, cardEncoder)
 
 import Html exposing (..)
 import Html.App as Html
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import String exposing (repeat)
+import Json.Encode
 
 
 type alias Card =
@@ -62,8 +63,15 @@ init num =
         { shape = shape, number = number, color = color }
 
 
-
 -- VIEW
+
+cardEncoder : Card -> Json.Encode.Value
+cardEncoder card =
+    Json.Encode.object
+        [ ( "color", Json.Encode.string <| toString card.color )
+        , ( "number", Json.Encode.string <| toString card.number )
+        , ( "shape", Json.Encode.string <| toString card.shape )
+        ]
 
 
 asciiArt : Shape -> String

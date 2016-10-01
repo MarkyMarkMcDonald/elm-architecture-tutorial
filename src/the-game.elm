@@ -11,7 +11,6 @@ import Sets exposing (isValid)
 import Debug exposing (..)
 import ListReplacement exposing (fromIf)
 import LocalStorage exposing (..)
-import Json.Encode
 import Task
 import Shuffling exposing (shuffle)
 import Random
@@ -24,15 +23,6 @@ main =
         , update = update
         , subscriptions = always Sub.none
         }
-
-
-cardEncoder : Card -> Json.Encode.Value
-cardEncoder card =
-    Json.Encode.object
-        [ ( "color", Json.Encode.string <| toString card.color )
-        , ( "number", Json.Encode.string <| toString card.number )
-        , ( "shape", Json.Encode.string <| toString card.shape )
-        ]
 
 
 type alias Model =
