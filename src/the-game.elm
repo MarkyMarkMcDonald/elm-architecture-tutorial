@@ -73,13 +73,13 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd a )
 update message model =
     case message of
-        ToggleSelect id ->
+        ToggleSelect index ->
             let
                 state =
-                    toggleAt id model
+                    toggleAt index model
             in
                 if isAValidSet state.cards then
-                    ( replaceSet id state, Cmd.none )
+                    ( replaceSet state, Cmd.none )
                 else
                     ( state, Cmd.none )
 
@@ -92,8 +92,8 @@ toggleAt index model =
     { model | cards = applyAtIndex index Selectable.toggle model.cards }
 
 
-replaceSet : Int -> Model -> Model
-replaceSet index { cards, deck } =
+replaceSet : Model -> Model
+replaceSet { cards, deck } =
     let
         { items, source } =
             ListReplacement.fromIf .selected { items = cards, source = List.map Selectable.unselected deck }
