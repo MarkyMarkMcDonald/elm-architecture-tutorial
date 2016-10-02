@@ -76,7 +76,7 @@ update message model =
         ToggleSelect id ->
             let
                 state =
-                    toggleSelectionAt id model
+                    toggleAt id model
             in
                 if isAValidSet state.cards then
                     ( replaceSet id state, Cmd.none )
@@ -87,8 +87,8 @@ update message model =
             ( state, Cmd.none )
 
 
-toggleSelectionAt : Int -> Model -> Model
-toggleSelectionAt index model =
+toggleAt : Int -> Model -> Model
+toggleAt index model =
     { model | cards = applyAtIndex index Selectable.toggle model.cards }
 
 
