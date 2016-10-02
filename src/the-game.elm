@@ -5,7 +5,7 @@ import Html.App as App
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Card exposing (Card)
-import Selectable exposing (..)
+import Selectable exposing (Selectable)
 import Sets exposing (attributesSameOrUnique)
 import ListReplacement exposing (fromIf)
 import Task exposing (Task)
@@ -56,7 +56,7 @@ initLocalGame =
             shuffledCards |> List.drop 12
 
         cards =
-            shuffledCards |> List.take 12 |> List.map unselected
+            shuffledCards |> List.take 12 |> List.map Selectable.unselected
     in
         Task.succeed { cards = cards, deck = deck }
 
@@ -89,14 +89,14 @@ update message model =
 
 toggleSelectionAt : Int -> Model -> Model
 toggleSelectionAt index model =
-    { model | cards = applyAtIndex index toggle model.cards }
+    { model | cards = applyAtIndex index Selectable.toggle model.cards }
 
 
 replaceSet : Int -> Model -> Model
 replaceSet index { cards, deck } =
     let
         { items, source } =
-            ListReplacement.fromIf .selected { items = cards, source = List.map unselected deck }
+            ListReplacement.fromIf .selected { items = cards, source = List.map Selectable.unselected deck }
     in
         { cards = items, deck = List.map .item source }
 
