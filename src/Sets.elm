@@ -1,10 +1,10 @@
-module Sets exposing (isValid)
+module Sets exposing (attributesSameOrUnique)
 
 import Card exposing (Card, attributes)
 
 
-isValid : List Card -> Bool
-isValid cards =
+attributesSameOrUnique : List Card -> Bool
+attributesSameOrUnique cards =
     List.all isTrue (attributeChecks cards)
 
 

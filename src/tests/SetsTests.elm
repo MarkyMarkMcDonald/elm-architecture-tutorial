@@ -4,7 +4,7 @@ import Test exposing (..)
 import Expect
 import String
 import Card exposing (..)
-import Sets exposing (isValid)
+import Sets exposing (attributesSameOrUnique)
 
 
 all : Test
@@ -14,7 +14,7 @@ all =
             [ test "All of the same" <|
                 \() ->
                     Expect.true "Sets can have attributes with all the same properties"
-                        (Sets.isValid
+                        (Sets.attributesSameOrUnique
                             [ { number = One, shape = Diamond, color = Red }
                             , { number = One, shape = Diamond, color = Red }
                             , { number = One, shape = Diamond, color = Red }
@@ -23,7 +23,7 @@ all =
             , test "All of unique" <|
                 \() ->
                     Expect.true "Sets can have attributes with all unique properties"
-                        (Sets.isValid
+                        (Sets.attributesSameOrUnique
                             [ { number = One, shape = Diamond, color = Red }
                             , { number = Two, shape = Oval, color = Blue }
                             , { number = Three, shape = Squiggle, color = Green }
@@ -32,7 +32,7 @@ all =
             , test "Varying of same and unique" <|
                 \() ->
                     Expect.true "Sets can have attributes with all unique or all same properties"
-                        (Sets.isValid
+                        (Sets.attributesSameOrUnique
                             [ { number = One, shape = Diamond, color = Red }
                             , { number = Two, shape = Diamond, color = Blue }
                             , { number = Three, shape = Diamond, color = Green }
@@ -43,7 +43,7 @@ all =
             [ test "One but not all duplicates" <|
                 \() ->
                     Expect.false "One but not all duplicates for color"
-                        (Sets.isValid
+                        (Sets.attributesSameOrUnique
                             [ { number = One, shape = Diamond, color = Blue }
                             , { number = Two, shape = Squiggle, color = Blue }
                             , { number = Three, shape = Oval, color = Red }
@@ -52,7 +52,7 @@ all =
             , test "One but not all duplicates" <|
                 \() ->
                     Expect.false "One but not all duplicates another attribute"
-                        (Sets.isValid
+                        (Sets.attributesSameOrUnique
                             [ { number = One, shape = Diamond, color = Blue }
                             , { number = Two, shape = Diamond, color = Blue }
                             , { number = Three, shape = Oval, color = Blue }

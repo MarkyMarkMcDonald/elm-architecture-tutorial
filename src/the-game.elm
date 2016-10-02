@@ -6,7 +6,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Card exposing (Card)
 import Selectable exposing (..)
-import Sets exposing (isValid)
+import Sets exposing (attributesSameOrUnique)
 import ListReplacement exposing (fromIf)
 import Task exposing (Task)
 import Shuffling
@@ -74,35 +74,41 @@ update : Msg -> Model -> ( Model, Cmd a )
 update message model =
     case message of
         ToggleSelect id ->
-            ( updateSelectionsANDSetStatus id model, Cmd.none )
+            let
+                state =
+                    toggleSelectionAt id model
+            in
+                if isAValidSet state.cards then
+                    ( replaceSet id state, Cmd.none )
+                else
+                    ( state, Cmd.none )
 
         LoadedFromServer state ->
             ( state, Cmd.none )
 
 
-updateSelectionsANDSetStatus : Int -> Model -> Model
-updateSelectionsANDSetStatus index model =
+toggleSelectionAt : Int -> Model -> Model
+toggleSelectionAt index model =
+    { model | cards = applyAtIndex index toggle model.cards }
+
+
+replaceSet : Int -> Model -> Model
+replaceSet index { cards, deck } =
     let
-        updatedModel =
-            { model | cards = applyAtIndex index toggle model.cards }
+        { items, source } =
+            ListReplacement.fromIf .selected { items = cards, source = List.map unselected deck }
     in
-        let
-            { cards, deck } =
-                updatedModel
-        in
-            if isAValidSet <| Selectable.selected cards then
-                let
-                    { items, source } =
-                        ListReplacement.fromIf .selected { items = cards, source = List.map unselected deck }
-                in
-                    { cards = items, deck = List.map .item source }
-            else
-                updatedModel
+        { cards = items, deck = List.map .item source }
 
 
-isAValidSet : List Card -> Bool
+isAValidSet : List SelectableCard -> Bool
 isAValidSet cards =
-    List.length cards == 3 && Sets.isValid cards
+    let
+        selectedCards =
+            cards |> List.filter .selected
+    in
+        (List.length selectedCards == 3)
+            && Sets.attributesSameOrUnique (List.map .item selectedCards)
 
 
 applyAtIndex : Int -> (a -> a) -> List a -> List a
