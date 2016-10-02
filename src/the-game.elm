@@ -4,12 +4,12 @@ import Html exposing (Html, div, span)
 import Html.App as App
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Card exposing (Card, init)
+import Card exposing (Card)
 import Selectable exposing (..)
 import Sets exposing (isValid)
 import ListReplacement exposing (fromIf)
-import Shuffling exposing (shuffle)
-import Task
+import Task exposing (Task)
+import Shuffling
 import Random
 
 
@@ -42,19 +42,23 @@ init =
     , Task.perform
         (\error -> LoadedFromServer { cards = [], deck = [] })
         (\result -> LoadedFromServer result)
-        (let
-            shuffledCards =
-                [0..26] |> Shuffling.shuffle (Random.initialSeed 31415) |> List.map Card.init
-
-            deck =
-                shuffledCards |> List.drop 12
-
-            cards =
-                shuffledCards |> List.take 12 |> List.map unselected
-         in
-            Task.succeed { cards = cards, deck = deck }
-        )
+        (initLocalGame)
     )
+
+
+initLocalGame : Task Never Model
+initLocalGame =
+    let
+        shuffledCards =
+            [0..26] |> Shuffling.shuffle (Random.initialSeed 31415) |> List.map Card.init
+
+        deck =
+            shuffledCards |> List.drop 12
+
+        cards =
+            shuffledCards |> List.take 12 |> List.map unselected
+    in
+        Task.succeed { cards = cards, deck = deck }
 
 
 
