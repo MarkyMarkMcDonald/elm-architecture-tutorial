@@ -1,4 +1,4 @@
-module Card exposing (Card, view, attributes, init, cardEncoder)
+module Card exposing (Card, view, attributes, init, cardEncoder, Color (..), Shape (..), Number (..))
 
 import Html exposing (..)
 import Html.App as Html
