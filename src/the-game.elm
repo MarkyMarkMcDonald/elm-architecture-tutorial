@@ -11,6 +11,10 @@ import ListReplacement
 import Task exposing (Task)
 import Shuffling
 import Random
+import Http
+import Json.Decode exposing (Decoder)
+import GameModel exposing (Model, SelectableCard)
+import CardsDecoder
 
 
 main =
@@ -20,14 +24,6 @@ main =
         , update = update
         , subscriptions = always Sub.none
         }
-
-
-type alias Model =
-    { cards : List (SelectableCard), deck : List (Card) }
-
-
-type alias SelectableCard =
-    Selectable Card
 
 
 
@@ -42,8 +38,19 @@ init =
     , Task.perform
         (\error -> LoadedFromServer { cards = [], deck = [] })
         (\result -> LoadedFromServer result)
-        (initLocalGame)
+        (initServerGame)
     )
+
+
+initServerGame : Task Http.Error Model
+initServerGame =
+    Task.map
+        (\cardsRecord ->
+            { deck = []
+            , cards = List.map Selectable.unselected cardsRecord.cards
+            }
+        )
+        (Http.get CardsDecoder.decoder "http://localhost:3000/games/1")
 
 
 initLocalGame : Task Never Model
