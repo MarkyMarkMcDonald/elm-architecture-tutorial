@@ -1,13 +1,13 @@
 module Main exposing (..)
 
-import Html exposing (Html, div, span)
+import Html exposing (..)
 import Html.App as App
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Html.Events exposing (..)
 import Card exposing (Card)
 import Selectable exposing (Selectable)
-import Sets exposing (attributesSameOrUnique)
-import ListReplacement exposing (fromIf)
+import Sets
+import ListReplacement
 import Task exposing (Task)
 import Shuffling
 import Random
