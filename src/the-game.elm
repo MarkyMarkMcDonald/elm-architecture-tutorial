@@ -32,28 +32,40 @@ main =
 
 init : ( Model, Cmd Msg )
 init =
-    ( { cards = []
-      , deck = []
-      }
-    , Task.perform
-        (\error -> LoadedFromServer { cards = [], deck = [] })
-        (\result -> LoadedFromServer result)
-        (initServerGame)
-    )
+    let
+        server =
+            Just "http://localhost:3000"
+    in
+        ( { cards = []
+          , deck = []
+          , server = server
+          }
+        , Task.perform
+            (\error -> LoadedFromServer { cards = [], deck = [], server = server })
+            (\result -> LoadedFromServer result)
+            (case server of
+                Just location ->
+                    initServerGame location
+
+                Nothing ->
+                    initLocalGame
+            )
+        )
 
 
-initServerGame : Task Http.Error Model
-initServerGame =
+initServerGame : String -> Task Http.Error Model
+initServerGame server =
     Task.map
         (\cardsRecord ->
             { deck = []
             , cards = List.map Selectable.unselected cardsRecord.cards
+            , server = Just server
             }
         )
-        (Http.get CardsDecoder.decoder "http://localhost:3000/games/1")
+        (Http.get CardsDecoder.decoder (server ++ "/games/1"))
 
 
-initLocalGame : Task Never Model
+initLocalGame : Task Http.Error Model
 initLocalGame =
     let
         shuffledCards =
@@ -65,7 +77,7 @@ initLocalGame =
         cards =
             shuffledCards |> List.take 12 |> List.map Selectable.unselected
     in
-        Task.succeed { cards = cards, deck = deck }
+        Task.succeed { cards = cards, deck = deck, server = Nothing }
 
 
 
@@ -100,12 +112,12 @@ toggleAt index model =
 
 
 replaceSet : Model -> Model
-replaceSet { cards, deck } =
+replaceSet ({ cards, deck } as model) =
     let
         { items, source } =
             ListReplacement.fromIf .selected { items = cards, source = List.map Selectable.unselected deck }
     in
-        { cards = items, deck = List.map .item source }
+        { model | cards = items, deck = List.map .item source }
 
 
 validSetSelected : List SelectableCard -> Bool
