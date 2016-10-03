@@ -67,6 +67,7 @@ initLocalGame =
 
 type Msg
     = ToggleSelect Int
+    | SetChosen
     | LoadedFromServer Model
 
 
@@ -74,14 +75,13 @@ update : Msg -> Model -> ( Model, Cmd a )
 update message model =
     case message of
         ToggleSelect index ->
-            let
-                state =
-                    toggleAt index model
-            in
-                if isAValidSet state.cards then
-                    ( replaceSet state, Cmd.none )
-                else
-                    ( state, Cmd.none )
+            update SetChosen (toggleAt index model)
+
+        SetChosen ->
+            if validSetSelected model.cards then
+                ( replaceSet model, Cmd.none )
+            else
+                ( model, Cmd.none )
 
         LoadedFromServer state ->
             ( state, Cmd.none )
@@ -101,8 +101,8 @@ replaceSet { cards, deck } =
         { cards = items, deck = List.map .item source }
 
 
-isAValidSet : List SelectableCard -> Bool
-isAValidSet cards =
+validSetSelected : List SelectableCard -> Bool
+validSetSelected cards =
     let
         selectedCards =
             cards |> List.filter .selected
