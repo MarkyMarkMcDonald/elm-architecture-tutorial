@@ -103,7 +103,7 @@ asciiArt shape =
             "♢"
 
         Oval ->
-            "◎"
+            "◯"
 
         Squiggle ->
             "♡"
