@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
 
+var expressWs = require('express-ws')(app);
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -18,6 +19,12 @@ app.get('/games/1', function (req, res) {
     res.send(JSON.stringify(state));
 });
 
+app.ws('/games/1/board_updates', function(ws) {
+  setInterval(function() {
+    state.cards.push(state.cards[0]);
+    ws.send(JSON.stringify(state));
+  }, 1000);
+});
 
 app.listen(3000, function () {
     console.log('Example app listening on port 3000!');
