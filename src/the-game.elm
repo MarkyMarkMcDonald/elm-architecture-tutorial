@@ -15,6 +15,7 @@ import Http
 import Json.Decode exposing (Decoder)
 import GameModel exposing (Model, SelectableCard)
 import CardsDecoder
+import WebSocket
 
 
 main =
@@ -22,26 +23,22 @@ main =
         { init = init
         , view = view
         , update = update
-        , subscriptions = always Sub.none
+        , subscriptions = subscriptions
         }
 
-
+server =
+    Just "localhost:3000"
 
 -- MODEL
 
 
 init : ( Model, Cmd Msg )
 init =
-    let
-        server =
-            Just "http://localhost:3000"
-    in
         ( { cards = []
           , deck = []
-          , server = server
           }
         , Task.perform
-            (\error -> LoadedFromServer { cards = [], deck = [], server = server })
+            (\error -> LoadedFromServer { cards = [], deck = [] })
             (\result -> LoadedFromServer result)
             (case server of
                 Just location ->
@@ -54,15 +51,14 @@ init =
 
 
 initServerGame : String -> Task Http.Error Model
-initServerGame server =
+initServerGame serverUrl =
     Task.map
         (\cardsRecord ->
             { deck = []
             , cards = List.map Selectable.unselected cardsRecord.cards
-            , server = Just server
             }
         )
-        (Http.get CardsDecoder.decoder (server ++ "/games/1"))
+        (Http.get CardsDecoder.decoder ("http://" ++ serverUrl ++ "/games/1"))
 
 
 initLocalGame : Task Http.Error Model
@@ -77,8 +73,32 @@ initLocalGame =
         cards =
             shuffledCards |> List.take 12 |> List.map Selectable.unselected
     in
-        Task.succeed { cards = cards, deck = deck, server = Nothing }
+        Task.succeed { cards = cards, deck = deck }
 
+
+-- SUBSCRIPTIONS
+
+decodeWebSocketResponse : String -> Msg
+decodeWebSocketResponse response =
+   let
+      result = Json.Decode.decodeString CardsDecoder.decoder response
+   in
+     case result of
+       Ok state -> LoadedFromServer
+           { deck = []
+           , cards = List.map Selectable.unselected state.cards
+           }
+       Err _ -> LoadedFromServer { cards =[], deck = [] }
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  case server of
+      Just serverUrl ->
+          WebSocket.listen ("ws://" ++ serverUrl ++ "/games/1/board_updates") decodeWebSocketResponse
+
+      Nothing ->
+          Sub.none
 
 
 -- UPDATE
