@@ -26,28 +26,31 @@ main =
         , subscriptions = subscriptions
         }
 
+
 server =
     Just "localhost:3000"
+
+
 
 -- MODEL
 
 
 init : ( Model, Cmd Msg )
 init =
-        ( { cards = []
-          , deck = []
-          }
-        , Task.perform
-            (\error -> LoadedFromServer { cards = [], deck = [] })
-            (\result -> LoadedFromServer result)
-            (case server of
-                Just location ->
-                    initServerGame location
+    ( { cards = []
+      , deck = []
+      }
+    , Task.perform
+        (\error -> LoadedFromServer { cards = [], deck = [] })
+        (\result -> LoadedFromServer result)
+        (case server of
+            Just location ->
+                initServerGame location
 
-                Nothing ->
-                    initLocalGame
-            )
+            Nothing ->
+                initLocalGame
         )
+    )
 
 
 initServerGame : String -> Task Http.Error Model
@@ -76,29 +79,36 @@ initLocalGame =
         Task.succeed { cards = cards, deck = deck }
 
 
+
 -- SUBSCRIPTIONS
+
 
 decodeWebSocketResponse : String -> Msg
 decodeWebSocketResponse response =
-   let
-      result = Json.Decode.decodeString CardsDecoder.decoder response
-   in
-     case result of
-       Ok state -> LoadedFromServer
-           { deck = []
-           , cards = List.map Selectable.unselected state.cards
-           }
-       Err _ -> LoadedFromServer { cards =[], deck = [] }
+    let
+        result =
+            Json.Decode.decodeString CardsDecoder.decoder response
+    in
+        case result of
+            Ok state ->
+                LoadedFromServer
+                    { deck = []
+                    , cards = List.map Selectable.unselected state.cards
+                    }
+
+            Err _ ->
+                LoadedFromServer { cards = [], deck = [] }
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  case server of
-      Just serverUrl ->
-          WebSocket.listen ("ws://" ++ serverUrl ++ "/games/1/board_updates") decodeWebSocketResponse
+    case server of
+        Just serverUrl ->
+            WebSocket.listen ("ws://" ++ serverUrl ++ "/games/1/board_updates") decodeWebSocketResponse
 
-      Nothing ->
-          Sub.none
+        Nothing ->
+            Sub.none
+
 
 
 -- UPDATE
