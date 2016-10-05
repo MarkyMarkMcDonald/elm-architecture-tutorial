@@ -13,6 +13,7 @@ import Shuffling
 import Random
 import Http
 import Json.Decode exposing (Decoder)
+import Json.Encode as Json
 import GameModel exposing (Model, SelectableCard)
 import CardsDecoder
 import WebSocket
@@ -113,14 +114,16 @@ subscriptions model =
 
 -- UPDATE
 
+type alias Move = List Card
 
 type Msg
     = ToggleSelect Int
     | SetChosen
     | LoadedFromServer Model
+    | Noop
 
 
-update : Msg -> Model -> ( Model, Cmd a )
+update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
         ToggleSelect index ->
@@ -128,12 +131,35 @@ update message model =
 
         SetChosen ->
             if validSetSelected model.cards then
-                ( replaceSet model, Cmd.none )
+                case server of
+                    Just serverUrl ->
+                        ( model, sendMoveToServer serverUrl (currentMove model))
+
+                    Nothing ->
+                        ( replaceSet model, Cmd.none )
             else
                 ( model, Cmd.none )
 
         LoadedFromServer state ->
             ( state, Cmd.none )
+
+        Noop ->
+            (model, Cmd.none)
+
+currentMove : Model -> Move
+currentMove ({cards} as model) =
+    cards |> List.filter .selected |> List.map .item
+
+sendMoveToServer : String -> Move -> Cmd Msg
+sendMoveToServer serverUrl (move) =
+    let
+    body = Http.string <| Json.encode 2 (Json.list <| List.map Card.cardEncoder move)
+    movesUrl = "http://" ++ serverUrl ++ "/games/1/moves"
+    in
+    Task.perform
+        (always Noop)
+        (always Noop)
+        (Http.post Json.Decode.string movesUrl body)
 
 
 toggleAt : Int -> Model -> Model

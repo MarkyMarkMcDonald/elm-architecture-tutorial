@@ -23,7 +23,7 @@ app.ws('/games/1/board_updates', function(ws) {
   setInterval(function() {
     state.cards.push(state.cards[0]);
     ws.send(JSON.stringify(state));
-  }, 1000);
+  }, 5000);
 });
 
 app.listen(3000, function () {
