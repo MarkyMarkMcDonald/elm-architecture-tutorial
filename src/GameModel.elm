@@ -5,7 +5,7 @@ import Card exposing (Card)
 
 
 type alias Model =
-    { cards : List (SelectableCard), deck : List (Card) }
+    { cards : List SelectableCard, deck : List Card }
 
 
 type alias SelectableCard =

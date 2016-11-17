@@ -11,16 +11,16 @@ type alias CardsRecord =
 
 decoder : Json.Decoder { cards : List Card }
 decoder =
-    object1 CardsRecord
-        ("cards" := Json.list cardDecoder)
+    map CardsRecord
+        (field "cards" <| Json.list cardDecoder)
 
 
 cardDecoder : Json.Decoder Card
 cardDecoder =
-    object3 Card
-        (("shape" := string) `andThen` decodeShape)
-        (("number" := string) `andThen` decodeNumber)
-        (("color" := string) `andThen` decodeColor)
+    map3 Card
+        ((field "shape" string) |> andThen decodeShape)
+        ((field "number" string) |> andThen decodeNumber)
+        ((field "color" string) |> andThen decodeColor)
 
 
 

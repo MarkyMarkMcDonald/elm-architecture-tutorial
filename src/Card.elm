@@ -1,7 +1,6 @@
 module Card exposing (Card, view, attributes, init, cardEncoder, Color(..), Shape(..), Number(..))
 
 import Html exposing (..)
-import Html.App as Html
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import String exposing (repeat)
@@ -48,7 +47,7 @@ init : Int -> Card
 init num =
     let
         shape =
-            case num `rem` 3 of
+            case num |> rem 3 of
                 0 ->
                     Diamond
 
@@ -59,7 +58,7 @@ init num =
                     Squiggle
 
         number =
-            case num // 3 `rem` 3 of
+            case num // 3 |> rem 3 of
                 0 ->
                     One
 
@@ -70,7 +69,7 @@ init num =
                     Three
 
         color =
-            case num // 9 `rem` 3 of
+            case num // 9 |> rem 3 of
                 0 ->
                     Red
 

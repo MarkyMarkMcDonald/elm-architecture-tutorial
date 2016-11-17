@@ -8,7 +8,7 @@ attributesSameOrUnique cards =
     List.all isTrue (attributeChecks cards)
 
 
-attributeChecks : List (Card) -> List (Bool)
+attributeChecks : List Card -> List Bool
 attributeChecks cards =
     List.map (allSameOrDifferent cards) Card.attributes
 
@@ -17,7 +17,7 @@ isTrue =
     ((==) True)
 
 
-allSameOrDifferent : List (Card) -> (Card -> a) -> Bool
+allSameOrDifferent : List Card -> (Card -> a) -> Bool
 allSameOrDifferent cards attribute =
     cards |> List.map attribute |> any [ allSame, allUnique ]
 

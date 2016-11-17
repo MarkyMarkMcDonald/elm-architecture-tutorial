@@ -1,7 +1,6 @@
 module Main exposing (..)
 
 import Html exposing (..)
-import Html.App as App
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Card exposing (Card)
@@ -18,17 +17,18 @@ import CardsDecoder
 import WebSocket
 
 
-main =
-    App.program
-        { init = init
-        , view = view
-        , update = update
-        , subscriptions = subscriptions
-        }
+main = Html.text "Hello World"
+--    program
+--        { init = init
+--        , view = view
+--        , update = update
+--        , subscriptions = subscriptions
+--        }
 
 
 server =
-    Just "localhost:3000"
+    --Just "localhost:3000"
+    Nothing
 
 
 
@@ -40,9 +40,15 @@ init =
     ( { cards = []
       , deck = []
       }
-    , Task.perform
-        (\error -> LoadedFromServer { cards = [], deck = [] })
-        (\result -> LoadedFromServer result)
+    , Task.attempt
+        (\result ->
+            case result of
+                Ok value ->
+                    LoadedFromServer value
+
+                Err error ->
+                    LoadedFromServer { cards = [], deck = [] }
+        )
         (case server of
             Just location ->
                 initServerGame location
@@ -61,14 +67,14 @@ initServerGame serverUrl =
             , cards = List.map Selectable.unselected cardsRecord.cards
             }
         )
-        (Http.get CardsDecoder.decoder ("http://" ++ serverUrl ++ "/games/1"))
+        (Http.toTask (Http.get ("http://" ++ serverUrl ++ "/games/1") CardsDecoder.decoder))
 
 
 initLocalGame : Task Http.Error Model
 initLocalGame =
     let
         shuffledCards =
-            [0..26] |> Shuffling.shuffle (Random.initialSeed 31415) |> List.map Card.init
+            List.range 0 26 |> Shuffling.shuffle (Random.initialSeed 31415) |> List.map Card.init
 
         deck =
             shuffledCards |> List.drop 12
